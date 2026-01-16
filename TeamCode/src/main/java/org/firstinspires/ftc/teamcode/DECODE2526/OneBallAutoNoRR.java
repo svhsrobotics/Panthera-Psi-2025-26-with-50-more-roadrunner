@@ -34,10 +34,11 @@ public class OneBallAutoNoRR extends LinearOpMode {
         DcMotorEx left = hardwareMap.get(DcMotorEx.class, "left");
         DcMotorEx right = hardwareMap.get(DcMotorEx.class, "right");
         DcMotor shoot = hardwareMap.get(DcMotor.class, "launch1");
-        DcMotor  shoot2 = hardwareMap.get(DcMotor.class, "launch2");
+        DcMotor shoot2 = hardwareMap.get(DcMotor.class, "launch2");
         DcMotor intake = hardwareMap.get(DcMotorEx.class, "intake");
-       Servo  gateServo = hardwareMap.get(Servo.class, "gateServo");
-       Servo gateServo2 = hardwareMap.get(Servo.class, "gateServo2");
+        Servo gateServo = hardwareMap.get(Servo.class, "gateServo");
+        Servo gateServo2 = hardwareMap.get(Servo.class, "gateServo2");
+        gateServo2.setDirection(Servo.Direction.REVERSE);
         shoot2.setDirection(DcMotorSimple.Direction.REVERSE);
         right.setDirection(DcMotorSimple.Direction.REVERSE);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -119,18 +120,20 @@ public class OneBallAutoNoRR extends LinearOpMode {
         // end method initAprilTag()
 
 
-            while(left.getCurrentPosition() < 3000 ) {
-                telemetry.addData("leftpos", left.getCurrentPosition());
-                telemetry.addData("rightpos", right.getCurrentPosition());
-                telemetry.update();
-                left.setPower(-1);
-                right.setPower(-1);
-                left.setTargetPosition(3000);
-                right.setTargetPosition(3000);
-                left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                telemetry.addData("target, ", right.getTargetPosition());
-            }
+        while (left.getCurrentPosition() < 3000) {
+            gateServo.setPosition(.015);
+            gateServo2.setPosition(.015);
+            telemetry.addData("leftpos", left.getCurrentPosition());
+            telemetry.addData("rightpos", right.getCurrentPosition());
+            telemetry.update();
+            left.setPower(-1);
+            right.setPower(-1);
+            left.setTargetPosition(3000);
+            right.setTargetPosition(3000);
+            left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            telemetry.addData("target, ", right.getTargetPosition());
+        }
         left.setPower(0);
         right.setPower(0);
         sleep(500);
@@ -138,15 +141,15 @@ public class OneBallAutoNoRR extends LinearOpMode {
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         System.out.println("encoders positions are: " + left.getCurrentPosition() + " and " + right.getCurrentPosition());
-            while(left.getCurrentPosition() < 300 ){
+        while (left.getCurrentPosition() < 300) {
 
-                left.setPower(1);
-                right.setPower(-1);
-                left.setTargetPosition(300);
-                right.setTargetPosition(-300);
-                left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
+            left.setPower(1);
+            right.setPower(-1);
+            left.setTargetPosition(300);
+            right.setTargetPosition(-300);
+            left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
 
           /*  while(true == true){
                 left.setPower(0);
@@ -157,14 +160,13 @@ public class OneBallAutoNoRR extends LinearOpMode {
             }*/
 
 
-
         while ((cameraX < 250 || cameraX > 350) && aprilTag.getDetections() != null && gamepad1.dpad_down && !aprilTag.getDetections().isEmpty()) {
             cameraX = aprilTag.getDetections().get(0).center.x;
             if (cameraX > 275) {
-               left.setPower(.2);
+                left.setPower(.2);
             }
             if (cameraX < 325) {
-               right.setPower(.2);
+                right.setPower(.2);
             }
 
 
@@ -179,23 +181,25 @@ public class OneBallAutoNoRR extends LinearOpMode {
             telemetry.addData("BEARING", "NULL");
         }
         telemetry.update();
-        shoot.setPower(1);
-        shoot2.setPower(1);
+        shoot.setPower(.5);
+        shoot2.setPower(.5);
         sleep(5000);
-        intake.setPower(.2);
+        for(int i = 0; i < 10; i ++){
+        intake.setPower((double) i /10);}
+        //sleep(500);
+        gateServo.setPosition(1);
+        gateServo2.setPosition(1);
 
-       gateServo.setPosition(1);
-       gateServo2.setPosition(-1);
-       sleep(5000);
+        // gateServo2.setPosition(.25);
 
+
+        sleep(5000);
+
+
+        // telemetry.addData("end",0);
+        //telemetry.update();
 
     }
-
-
-           // telemetry.addData("end",0);
-            //telemetry.update();
-
-
 
 
 

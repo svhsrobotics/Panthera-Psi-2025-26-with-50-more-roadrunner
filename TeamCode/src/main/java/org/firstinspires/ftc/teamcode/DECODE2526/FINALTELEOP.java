@@ -64,7 +64,7 @@ AtomicBoolean shooting = new AtomicBoolean(false);
         double gatePos = 0;
         double launchpower = 0;
         System.out.println("set gatePos to 0");
-        double servoshootpos = 0.25;
+        double servoshootpos = 0.5;
 
         while(opModeInInit()){
             launchpower=0.9;
@@ -87,8 +87,8 @@ AtomicBoolean shooting = new AtomicBoolean(false);
                 gateServo.setPosition(servoshootpos);
                 gateServo2.setPosition(servoshootpos);
             } else if (gamepad1.dpad_down) { //close
-                gateServo.setPosition(0.015);
-                gateServo2.setPosition(0.015);
+                gateServo.setPosition(0);
+                gateServo2.setPosition(0);
             }
 
             if (gamepad1.dpad_right) { //dpad manually spins up or down flywheels
@@ -117,8 +117,8 @@ AtomicBoolean shooting = new AtomicBoolean(false);
 
             if(gamepad1.b){
                 intake.setPower(1);
-                gateServo.setPosition(.015);
-                gateServo2.setPosition(.015);
+                gateServo.setPosition(.025);
+                gateServo2.setPosition(.025);
                 launch.setPower(0);
                 launch2.setPower(0);
             }
