@@ -10,6 +10,7 @@ public class backupAuto extends LinearOpMode {
     private DcMotor right;
     @Override
     public void runOpMode() throws InterruptedException {
+        waitForStart();
         left = hardwareMap.get(DcMotor.class, "left");
         right = hardwareMap.get(DcMotor.class, "right");
         left.setPower(-.5);
