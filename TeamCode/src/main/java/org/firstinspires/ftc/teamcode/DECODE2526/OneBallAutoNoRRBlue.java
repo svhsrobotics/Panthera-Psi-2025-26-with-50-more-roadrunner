@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 @Autonomous
 
-public class OneBallAutoNoRR extends LinearOpMode {
+public class OneBallAutoNoRRBlue extends LinearOpMode {
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     private YawPitchRollAngles cameraOrientation;
@@ -141,12 +141,12 @@ public class OneBallAutoNoRR extends LinearOpMode {
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         System.out.println("encoders positions are: " + left.getCurrentPosition() + " and " + right.getCurrentPosition());
-        while (left.getCurrentPosition() < 200) {
+        while (left.getCurrentPosition() > -200) {
 
             left.setPower(1);
             right.setPower(-1);
-            left.setTargetPosition(200);
-            right.setTargetPosition(-200);
+            left.setTargetPosition(-200);
+            right.setTargetPosition(200);
             left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
