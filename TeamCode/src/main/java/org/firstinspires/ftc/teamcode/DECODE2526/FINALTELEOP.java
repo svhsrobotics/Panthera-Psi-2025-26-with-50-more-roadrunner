@@ -316,6 +316,15 @@ private double cameraX = 0;
                 }
                 telemetry.update();
             }
+            if(gamepad2.dpad_left){ //estop
+                intake.setPower(0);
+                scheduler.shutdownNow();
+                launchpower = 0;
+                left.setPower(0);
+                right.setPower(0);
+            }
+
+
         }
         scheduler.shutdownNow();
     }
