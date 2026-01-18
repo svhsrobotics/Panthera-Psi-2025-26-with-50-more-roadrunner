@@ -121,8 +121,8 @@ public class OneBallAutoNoRRBlue extends LinearOpMode {
 
 
         while (left.getCurrentPosition() < 3000) {
-            gateServo.setPosition(.009);
-            gateServo2.setPosition(.009);
+            gateServo.setPosition(.09);
+            gateServo2.setPosition(.09);
             telemetry.addData("leftpos", left.getCurrentPosition());
             telemetry.addData("rightpos", right.getCurrentPosition());
             telemetry.update();
@@ -184,10 +184,13 @@ public class OneBallAutoNoRRBlue extends LinearOpMode {
             telemetry.addData("BEARING", "NULL");
         }
         telemetry.update();
-        shoot.setPower(.5);
-        shoot2.setPower(.5);
-        sleep(5000);
+        shoot.setPower(1);
+        shoot2.setPower(1);
+        gateServo2.setPosition(0.09);
+        gateServo.setPosition(0.09);
         intake.setPower(1);
+        sleep(5000);
+
         //sleep(500);
         gateServo.setPosition(1);
         gateServo2.setPosition(1);

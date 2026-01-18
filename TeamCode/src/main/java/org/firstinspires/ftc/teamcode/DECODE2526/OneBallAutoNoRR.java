@@ -17,6 +17,10 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Autonomous
 
@@ -30,6 +34,8 @@ public class OneBallAutoNoRR extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
         double driveToTicks = 0;
         DcMotorEx left = hardwareMap.get(DcMotorEx.class, "left");
         DcMotorEx right = hardwareMap.get(DcMotorEx.class, "right");
@@ -120,7 +126,7 @@ public class OneBallAutoNoRR extends LinearOpMode {
         // end method initAprilTag()
 
 
-        while (left.getCurrentPosition() < 3000) {
+      /*  while (left.getCurrentPosition() < 3000) {
             gateServo.setPosition(.009);
             gateServo2.setPosition(.009);
             telemetry.addData("leftpos", left.getCurrentPosition());
@@ -160,6 +166,8 @@ public class OneBallAutoNoRR extends LinearOpMode {
             }*/
 
 
+
+
         while ((cameraX < 275 || cameraX > 325) && aprilTag.getDetections() != null && gamepad1.dpad_down && !aprilTag.getDetections().isEmpty()) {
             telemetry.addData("cameraX", cameraX);
             System.out.println(cameraX);
@@ -184,7 +192,7 @@ public class OneBallAutoNoRR extends LinearOpMode {
             telemetry.addData("BEARING", "NULL");
         }
         telemetry.update();
-        shoot.setPower(.5);
+        /*shoot.setPower(.5);
         shoot2.setPower(.5);
         sleep(5000);
         intake.setPower(1);
@@ -199,10 +207,31 @@ public class OneBallAutoNoRR extends LinearOpMode {
         gateServo.setPosition(0.09);
         gateServo2.setPosition(0.09);
         shoot.setPower(0);
-        shoot2.setPower(0);
+        shoot2.setPower(0);*/
+       // intake.setPower(0.2);
+       // shoot.setPower(1);
+        //shoot2.setPower(1);
+        //wait 1 sec then open the gate
+        AtomicBoolean shooting = new AtomicBoolean(true);
+ while(shooting.get()){
+        scheduler.schedule(() -> {
+            gateServo.setPosition(1);
+            gateServo2.setPosition(1);
+        }, 5, TimeUnit.SECONDS);
+
+
+        scheduler.schedule(() -> {
+            gateServo.setPosition(0.09);
+            gateServo2.setPosition(0.09);
+            intake.setPower(0);
+            shoot.setPower(0);
+            shoot2.setPower(0);
+            shooting.set(false);
+          //  shooting.set(false);
+        }, 6, TimeUnit.SECONDS);}
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        while(left.getCurrentPosition() > -2000){
+       /* while(left.getCurrentPosition() > -2000){
             left.setTargetPosition(-2000);
             right.setTargetPosition(-2000);
             left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -210,7 +239,7 @@ public class OneBallAutoNoRR extends LinearOpMode {
             right.setPower(.1);
             left.setPower(.1);
         }
-
+*/
 
 
         // telemetry.addData("end",0);
