@@ -61,8 +61,8 @@ private double cameraX = 0;
     public void runOpMode() throws InterruptedException {
         right = hardwareMap.get(DcMotor.class, "right");
         left = hardwareMap.get(DcMotor.class, "left");
-        launch2=hardwareMap.get(DcMotor.class, "launch2");
-        launch=hardwareMap.get(DcMotor.class, "launch1");
+        launch2 = hardwareMap.get(DcMotor.class, "launch2");
+        launch = hardwareMap.get(DcMotor.class, "launch1");
         launch.setDirection(DcMotorSimple.Direction.REVERSE);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         gateServo = hardwareMap.get(Servo.class, "gateServo");
@@ -70,10 +70,10 @@ private double cameraX = 0;
         voltSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
         frontLights = hardwareMap.get(RevBlinkinLedDriver.class, "frontLights");
         rearLights = hardwareMap.get(RevBlinkinLedDriver.class, "rearLights");
-AtomicBoolean shooting = new AtomicBoolean(false);
+        AtomicBoolean shooting = new AtomicBoolean(false);
         gateServo2.setDirection(Servo.Direction.REVERSE);
-        debounce=true;
-        isthethingthething=false;
+        debounce = true;
+        isthethingthething = false;
         Debouncer debouncingOnDeesNuts = new Debouncer();
         Debouncer debouncer2 = new Debouncer();
         double gatePos = 0;
@@ -151,19 +151,27 @@ AtomicBoolean shooting = new AtomicBoolean(false);
 
         // end method initAprilTag()
 
-        while(opModeInInit()){
-            launchpower=0.9;
+        while (opModeInInit()) {
+            launchpower = 0.9;
             frontLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         }
         waitForStart();
+
         while (opModeIsActive()) {
 
 
-
-            if(intake.getPower() != 0){
+            if (intake.getPower() != 0) {
                 rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-            } else{rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+            } else {
+                rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+            }
+
+            if (launchpower != 0) {
+                frontLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
+            } else {
+                frontLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+            }
 
             System.out.println("gatepos: " + gatePos);
             System.out.println("servo 1 pos: " + gateServo.getPosition());
@@ -202,11 +210,11 @@ AtomicBoolean shooting = new AtomicBoolean(false);
             telemetry.addData("shoot power", launchpower);
             telemetry.addData("servo1Pos: ", gateServo.getPosition());
             telemetry.addData("servo2Pos", gateServo2.getPosition());
-            telemetry.addData("average milliamp",  averageCurrent);
-            telemetry.addData("shootservopos",  servoshootpos);
+            telemetry.addData("average milliamp", averageCurrent);
+            telemetry.addData("shootservopos", servoshootpos);
             telemetry.update();
 
-            if(gamepad1.b){
+            if (gamepad1.b) {
                 intake.setPower(1);
                 gateServo.setPosition(closePos);
                 gateServo2.setPosition(closePos);
@@ -214,14 +222,14 @@ AtomicBoolean shooting = new AtomicBoolean(false);
                 launch2.setPower(0);
             }
 
-            if(gamepad1.right_bumper){
+            if (gamepad1.right_bumper) {
                 intake.setPower(0);
 
 
             }
 
 
-            if(shootDebouncer.update(gamepad1.a) && !shooting.get()){
+            if (shootDebouncer.update(gamepad1.a) && !shooting.get()) {
 
                 //shoot
                 /*
@@ -240,7 +248,7 @@ AtomicBoolean shooting = new AtomicBoolean(false);
                     gateServo2.setPosition(1);
                 }, 5, TimeUnit.SECONDS);
 
-                scheduler.schedule(() ->{
+                scheduler.schedule(() -> {
                     gateServo.setPosition(0.09);
                     gateServo2.setPosition(0.09);
                     intake.setPower(0);
@@ -250,25 +258,24 @@ AtomicBoolean shooting = new AtomicBoolean(false);
                 }, 6, TimeUnit.SECONDS);
 
 
-
             }
 
-            if(gamepad2.y){
+            if (gamepad2.y) {
                 intake.setPower(1);
             }
 
-            if(gamepad2.x){
+            if (gamepad2.x) {
                 intake.setPower(0);
             }
-            if(gamepad2.a){
+            if (gamepad2.a) {
                 intake.setPower(-1);
             }
 
-            if(gamepad2.dpad_left){
-                servoshootpos = servoshootpos+1;
+            if (gamepad2.dpad_left) {
+                servoshootpos = servoshootpos + 1;
             }
-            if(gamepad2.dpad_right){
-                servoshootpos = servoshootpos-1;
+            if (gamepad2.dpad_right) {
+                servoshootpos = servoshootpos - 1;
             }
 
 
@@ -286,8 +293,8 @@ AtomicBoolean shooting = new AtomicBoolean(false);
             //   telemetry.update();
             // }
 
-            if(gamepad1.x){
-                while (((cameraX < 250 || cameraX > 350) && aprilTag.getDetections() != null && gamepad1.dpad_down && !aprilTag.getDetections().isEmpty()) && opModeIsActive()){
+            if (gamepad1.x) {
+                while (((cameraX < 250 || cameraX > 350) && aprilTag.getDetections() != null && gamepad1.dpad_down && !aprilTag.getDetections().isEmpty()) && opModeIsActive()) {
                     cameraX = aprilTag.getDetections().get(0).center.x;
                     if (cameraX > 275) {
                         left.setPower(.2);
