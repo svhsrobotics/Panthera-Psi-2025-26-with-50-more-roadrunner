@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp
-public class FINALTELEOP extends LinearOpMode{
+public class FINALTELEOPWithOutSchedulers extends LinearOpMode{
     private DcMotor right;
     private DcMotor left;
     private DcMotor launch2;
@@ -160,6 +160,8 @@ private double cameraX = 0;
 
         while (opModeIsActive()) {
 
+            launch.setPower(1);
+            launch.setPower(1);
 
             if (intake.getPower() != 0) {
                 rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
@@ -231,14 +233,14 @@ private double cameraX = 0;
 
             if (shootDebouncer.update(gamepad1.a) && !shooting.get()) {
 
-                //shoot
+               //shoot
                 /*
                 spin up wheel
                 open gate
                 wait a little
                 set power 0
                  */
-                shooting.set(true);
+               /* shooting.set(true);
                 intake.setPower(0.2);
                 launch.setPower(1);
                 launch.setPower(1);
@@ -246,7 +248,7 @@ private double cameraX = 0;
                 scheduler.schedule(() -> {
                     gateServo.setPosition(1);
                     gateServo2.setPosition(1);
-                }, 4, TimeUnit.SECONDS);
+                }, 1, TimeUnit.SECONDS);
 
                 scheduler.schedule(() -> {
                     gateServo.setPosition(closePos);
@@ -255,9 +257,11 @@ private double cameraX = 0;
                     launch.setPower(0);
                     launch2.setPower(0);
                     shooting.set(false);
-        }, 5, TimeUnit.SECONDS);
+        }, 1500, TimeUnit.MILLISECONDS);
 
-
+*/
+                gateServo.setPosition(1);
+                gateServo2.setPosition(1);
             }
 
             if (gamepad2.y) {
