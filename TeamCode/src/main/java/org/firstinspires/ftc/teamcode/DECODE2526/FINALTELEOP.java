@@ -39,11 +39,13 @@ public class FINALTELEOP extends LinearOpMode{
     private VoltageSensor  voltSensor;
     private RevBlinkinLedDriver frontLights;
     private RevBlinkinLedDriver rearLights;
+    private Servo siloServo;
     private Toggle toggle = new Toggle();
 
     ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
 private Debouncer shootDebouncer = new Debouncer();
+private Debouncer reallyCoolDebouncer = new Debouncer();
     private boolean debounce;
     private boolean isthethingthething;
     double totalCurrent = 0;
@@ -70,6 +72,7 @@ private double cameraX = 0;
         voltSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
         frontLights = hardwareMap.get(RevBlinkinLedDriver.class, "frontLights");
         rearLights = hardwareMap.get(RevBlinkinLedDriver.class, "rearLights");
+        siloServo = hardwareMap.get(Servo.class, "siloServo");
         AtomicBoolean shooting = new AtomicBoolean(false);
         gateServo2.setDirection(Servo.Direction.REVERSE);
         debounce = true;
@@ -160,6 +163,46 @@ private double cameraX = 0;
 
         while (opModeIsActive()) {
 
+            if (reallyCoolDebouncer.update(gamepad1.a) && !shooting.get()) { //shoot all the stuff that is currently primed
+
+
+                //shoot
+                /*
+                spin up wheel
+                open gate
+                wait a little
+                set power 0
+                 */
+                shooting.set(true);
+                intake.setPower(0.2);
+                launch.setPower(1);
+                launch.setPower(1);
+                //wait 1 sec then open the gate
+                scheduler.schedule(() -> {
+                    gateServo.setPosition(1);
+                    gateServo2.setPosition(1);
+                }, 4, TimeUnit.SECONDS);
+
+                scheduler.schedule(() -> {
+                    gateServo.setPosition(closePos);
+                    gateServo2.setPosition(closePos);
+
+                }, 5, TimeUnit.SECONDS);
+
+                scheduler.schedule(() -> {
+                            siloServo.setPosition(0.34);
+                    }, 500, TimeUnit.MILLISECONDS);
+
+
+                scheduler.schedule(()-> {
+                    siloServo.setPosition(0.5);
+                    gateServo.setPosition(1);
+                    gateServo2.setPosition(1);
+                }, 6, TimeUnit.SECONDS);
+
+
+            }
+
 
             if (intake.getPower() != 0) {
                 rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
@@ -229,7 +272,8 @@ private double cameraX = 0;
             }
 
 
-            if (shootDebouncer.update(gamepad1.a) && !shooting.get()) {
+            if (shootDebouncer.update(gamepad2.a) && !shooting.get()) { //shoot ball that is currently primed
+
 
                 //shoot
                 /*
@@ -330,4 +374,31 @@ private double cameraX = 0;
     }
 
 }
+
+
+
+/*TODO: Gamepad 1 (Primary Driver)
+
+
+    Intake Start (Cross/A Button): Logic Swap. * Code Reality: gamepad1.a triggers the shootDebouncer sequence (spinning flywheels and opening gates). It does not start a standard intake loop.
+
+    Shoot in Motif Order (Circle/B Button): Logic Swap.
+
+        Code Reality: gamepad1.b actually sets intake.setPower(1), effectively acting as the "Intake Start" button, while also closing the gates.
+
+    Stop Intake (Triangle/Y Button): Missing. * Code Reality: The code does not reference gamepad1.y at all. Intake stop is currently handled by gamepad1.right_bumper.
+
+    Drive (Sticks): Partially Commented Out.
+
+        Note: The lines assigning right.setPower and left.setPower to the joysticks are currently commented out (Lines 169–170). The robot will not move in its current state.
+
+Gamepad 2 (Secondary Operator)
+
+    Load 1 Ball from Silo (Circle/B Button): Missing. * Code Reality: The code does not reference gamepad2.b.
+
+    Intake Spin In (Triangle/Y Button): Functional, but lacks a "Stop" on the same controller besides the E-Stop.
+
+    Intake Spin Out (Cross/A Button): Logic Swap. * Code Reality: gamepad2.a is mapped to intake.setPower(-1), which matches "Spin Out," but the diagram labels the Cross button as "Shoot ball thats primed."
+
+    Shoot ball thats primed (Cross/A Button): Missing.*/
 
