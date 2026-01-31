@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp
 public class FINALTELEOP extends LinearOpMode{
@@ -160,48 +161,31 @@ private double cameraX = 0;
             rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         }
         waitForStart();
-
+intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+boolean loaded = false;
         while (opModeIsActive()) {
-
-            if (reallyCoolDebouncer.update(gamepad1.a) && !shooting.get()) { //shoot all the stuff that is currently primed
-
-
-                //shoot
-                /*
-                spin up wheel
-                open gate
-                wait a little
-                set power 0
-                 */
-                shooting.set(true);
-                intake.setPower(0.2);
-                launch.setPower(1);
-                launch.setPower(1);
-                //wait 1 sec then open the gate
-                scheduler.schedule(() -> {
-                    gateServo.setPosition(1);
-                    gateServo2.setPosition(1);
-                }, 4, TimeUnit.SECONDS);
-
-                scheduler.schedule(() -> {
-                    gateServo.setPosition(closePos);
-                    gateServo2.setPosition(closePos);
-
-                }, 5, TimeUnit.SECONDS);
-
-                scheduler.schedule(() -> {
-                            siloServo.setPosition(0.34);
-                    }, 500, TimeUnit.MILLISECONDS);
+            telemetry.addData("intakePos", intake.getCurrentPosition());
 
 
-                scheduler.schedule(()-> {
-                    siloServo.setPosition(0.5);
-                    gateServo.setPosition(1);
-                    gateServo2.setPosition(1);
-                }, 6, TimeUnit.SECONDS);
 
-
+           if(intake.getCurrentPosition() >=750){
+                intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
+
+            if(!loaded && gamepad1.a && (intake.getCurrentPosition()/6 < 20 && intake.getCurrentPosition()/6 > 10)){
+                siloServo.setPosition(0.34);
+                loaded = true;
+
+            } // load ball
+
+            if(loaded && gamepad1.a){
+                gateServo.setPosition(servoshootpos);
+                gateServo2.setPosition(servoshootpos);
+                loaded = false;
+            }
+
 
 
             if (intake.getPower() != 0) {
