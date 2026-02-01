@@ -18,10 +18,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.util.Debouncer;
 import org.firstinspires.ftc.teamcode.util.Toggle;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +48,7 @@ private Debouncer reallyCoolDebouncer = new Debouncer();
     private boolean debounce;
     private boolean isthethingthething;
     double totalCurrent = 0;
-    double closePos = 0.08;
+    double closePos = 0.09;
     int denominator = 0;
     double averageCurrent = 0;
     private AprilTagProcessor aprilTag;
@@ -82,7 +80,7 @@ private double cameraX = 0;
         Debouncer debouncer2 = new Debouncer();
         double gatePos = 0;
         double launchpower = 0;
-        System.out.println("set gatePos to 0");
+        //System.out.println("set gatePos to 0");
         double servoshootpos = 0.5;
 
         cameraPosition = new Position(DistanceUnit.INCH,
@@ -163,28 +161,45 @@ private double cameraX = 0;
         waitForStart();
 intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-boolean loaded = false;
+AtomicBoolean siloshootig = new AtomicBoolean(false);
+        AtomicInteger silopos = new AtomicInteger(1000);
+
         while (opModeIsActive()) {
             telemetry.addData("intakePos", intake.getCurrentPosition());
 
 
 
-           if(intake.getCurrentPosition() >=750){
-                intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
+           if(intake.getCurrentPosition() >=750) {
+               intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+               intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+           }
 
-            if(!loaded && gamepad1.a && (intake.getCurrentPosition()/6 < 20 && intake.getCurrentPosition()/6 > 10)){
-                siloServo.setPosition(0.34);
-                loaded = true;
+           System.out.println(intake.getCurrentPosition() + " wheel pos");
+           System.out.println(intake.getCurrentPosition()/120 + " pos/120");
 
-            } // load ball
+                if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 4 && intake.getCurrentPosition()/120 <= 7) && !siloshootig.get()) {
+                    intake.setPower(00);
+                    sleep(1000);
+                    siloshootig.set(true);
+                    gateServo.setPosition(closePos);
+                    gateServo2.setPosition(closePos);
 
-            if(loaded && gamepad1.a){
-                gateServo.setPosition(servoshootpos);
-                gateServo2.setPosition(servoshootpos);
-                loaded = false;
-            }
+                    scheduler.schedule(()->{
+                        siloServo.setPosition(0);
+                        intake.setPower(0);
+                    }, 100, TimeUnit.MILLISECONDS);
+
+                    double finalServoshootpos = servoshootpos;
+                    scheduler.schedule(() -> {
+                        gateServo.setPosition(finalServoshootpos);
+                        gateServo2.setPosition(finalServoshootpos);
+
+                        siloServo.setPosition(0.4);
+                        siloshootig.set(false);
+                    }, 3000 , TimeUnit.MILLISECONDS);
+                }
+
+
 
 
 
@@ -200,10 +215,10 @@ boolean loaded = false;
                 frontLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             }
 
-            System.out.println("gatepos: " + gatePos);
+           /* System.out.println("gatepos: " + gatePos);
             System.out.println("servo 1 pos: " + gateServo.getPosition());
             System.out.println("servo 2 pos: " + gateServo2.getPosition());
-            System.out.println("kickpos: " + servoshootpos);
+            System.out.println("kickpos: " + servoshootpos);*/
 
 
             right.setPower((gamepad1.right_stick_x + gamepad1.left_stick_y));
@@ -245,8 +260,8 @@ boolean loaded = false;
                 intake.setPower(1);
                 gateServo.setPosition(closePos);
                 gateServo2.setPosition(closePos);
-                launch.setPower(0);
-                launch2.setPower(0);
+               // launch.setPower(0);
+                //launch2.setPower(0);
             }
 
             if (gamepad1.right_bumper) {
@@ -279,9 +294,9 @@ boolean loaded = false;
                 scheduler.schedule(() -> {
                     gateServo.setPosition(closePos);
                     gateServo2.setPosition(closePos);
-                    intake.setPower(0);
-                    launch.setPower(0);
-                    launch2.setPower(0);
+                   // intake.setPower(0);
+                   // launch.setPower(0);
+                    //launch2.setPower(0);
                     shooting.set(false);
         }, 5, TimeUnit.SECONDS);
 
@@ -289,15 +304,15 @@ boolean loaded = false;
             }
 
             if (gamepad2.y) {
-                intake.setPower(1);
+                launch.setPower(0);
+                launch2.setPower(0);
             }
 
             if (gamepad2.x) {
                 scheduler.shutdownNow();
             }
-            if (gamepad2.a) {
-                intake.setPower(-1);
-            }
+
+
 
             if (gamepad2.dpad_left) {
                 servoshootpos = servoshootpos + 1;
@@ -321,7 +336,7 @@ boolean loaded = false;
             //   telemetry.update();
             // }
 
-            if (gamepad1.x) {
+           /* if (gamepad1.x) {
                 while (((cameraX < 250 || cameraX > 350) && aprilTag.getDetections() != null && gamepad1.dpad_down && !aprilTag.getDetections().isEmpty()) && opModeIsActive()) {
                     cameraX = aprilTag.getDetections().get(0).center.x;
                     if (cameraX > 275) {
@@ -343,7 +358,7 @@ boolean loaded = false;
                     telemetry.addData("BEARING", "NULL");
                 }
                 telemetry.update();
-            }
+            }*/
             if(gamepad2.dpad_left){ //estop
                 intake.setPower(0);
                 scheduler.shutdownNow();

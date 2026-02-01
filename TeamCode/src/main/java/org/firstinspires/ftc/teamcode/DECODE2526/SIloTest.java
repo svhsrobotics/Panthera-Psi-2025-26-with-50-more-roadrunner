@@ -28,8 +28,8 @@ while (opModeIsActive()){
     }
 
     siloServo.setPosition(servoPos);
-    //.34 for mocing
-    //0.5 for closed
+    //0 for mocing
+    //0.4 for closed
 }
     }
 }
