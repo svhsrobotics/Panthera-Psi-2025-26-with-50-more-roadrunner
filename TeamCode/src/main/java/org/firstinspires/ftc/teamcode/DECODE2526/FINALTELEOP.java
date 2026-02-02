@@ -65,6 +65,7 @@ private double cameraX = 0;
         launch2 = hardwareMap.get(DcMotor.class, "launch2");
         launch = hardwareMap.get(DcMotor.class, "launch1");
         launch.setDirection(DcMotorSimple.Direction.REVERSE);
+
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         gateServo = hardwareMap.get(Servo.class, "gateServo");
         gateServo2 = hardwareMap.get(Servo.class, "gateServo2");
@@ -177,8 +178,8 @@ AtomicBoolean siloshootig = new AtomicBoolean(false);
            System.out.println(intake.getCurrentPosition() + " wheel pos");
            System.out.println(intake.getCurrentPosition()/120 + " pos/120");
 
-                if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 4 && intake.getCurrentPosition()/120 <= 7) && !siloshootig.get()) {
-                    intake.setPower(00);
+                if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 5 && intake.getCurrentPosition()/120 <= 7) && !siloshootig.get()) {
+                    intake.setPower(00.6);
                     sleep(1000);
                     siloshootig.set(true);
                     gateServo.setPosition(closePos);
@@ -186,7 +187,7 @@ AtomicBoolean siloshootig = new AtomicBoolean(false);
 
                     scheduler.schedule(()->{
                         siloServo.setPosition(0);
-                        intake.setPower(0);
+                        intake.setPower(0.6);
                     }, 100, TimeUnit.MILLISECONDS);
 
                     double finalServoshootpos = servoshootpos;
