@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp
-public class FINALTELEOP extends LinearOpMode{
+public class FINALTELEOPREFACTOR extends LinearOpMode{
     private DcMotor right;
     private DcMotor left;
     private DcMotor launch2;
@@ -82,6 +82,11 @@ private double cameraX = 0;
         double launchpower = 0;
         //System.out.println("set gatePos to 0");
         double servoshootpos = 0.5;
+        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        AtomicBoolean siloshootig = new AtomicBoolean(false);
+        AtomicInteger silopos = new AtomicInteger(1000);
+
 
         cameraPosition = new Position(DistanceUnit.INCH,
                 0, 8, 0, 0);
@@ -161,15 +166,10 @@ private double cameraX = 0;
         waitForStart();
 
 
-intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-AtomicBoolean siloshootig = new AtomicBoolean(false);
-
-AtomicInteger silopos = new AtomicInteger(1000);
 
         while (opModeIsActive()) {
 
-            telemetry.addData("intakePos", intake.getCurrentPosition());
+           telemetry.addData("intakePos", intake.getCurrentPosition());
 
 
 
@@ -202,9 +202,6 @@ AtomicInteger silopos = new AtomicInteger(1000);
                         siloshootig.set(false);
                     }, 3000 , TimeUnit.MILLISECONDS);
                 }
-
-
-
 
 
             if (intake.getPower() != 0) {
@@ -265,13 +262,12 @@ AtomicInteger silopos = new AtomicInteger(1000);
                 gateServo.setPosition(closePos);
                 gateServo2.setPosition(closePos);
                // launch.setPower(0);
-                //launch2.setPower(0);
+               // launch2.setPower(0);
             }
 
             if (gamepad1.right_bumper) {
                 intake.setPower(0);
             }
-
 
             if (shootDebouncer.update(gamepad2.a) && !shooting.get()) { //shoot ball that is currently primed
 
@@ -295,8 +291,8 @@ AtomicInteger silopos = new AtomicInteger(1000);
                 scheduler.schedule(() -> {
                     gateServo.setPosition(closePos);
                     gateServo2.setPosition(closePos);
-                   // intake.setPower(0);
-                   // launch.setPower(0);
+                    // intake.setPower(0);
+                    // launch.setPower(0);
                     //launch2.setPower(0);
                     shooting.set(false);
         }, 5, TimeUnit.SECONDS);
@@ -370,7 +366,9 @@ AtomicInteger silopos = new AtomicInteger(1000);
 
 
         }
+
         scheduler.shutdownNow();
+
     }
 
 }
