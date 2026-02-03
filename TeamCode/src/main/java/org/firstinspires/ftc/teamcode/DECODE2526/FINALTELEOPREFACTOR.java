@@ -218,8 +218,8 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
             System.out.println("kickpos: " + servoshootpos);*/
 
 
-            right.setPower((gamepad1.right_stick_x + gamepad1.left_stick_y));
-            left.setPower((gamepad1.right_stick_x - gamepad1.left_stick_y));
+            left.setPower((gamepad1.right_stick_x + gamepad1.left_stick_y));
+            right.setPower((gamepad1.right_stick_x - gamepad1.left_stick_y));
             //0.25 is open 0.02 is close
             if (gamepad1.dpad_up) { //opens da gate
                 gateServo.setPosition(servoshootpos);
