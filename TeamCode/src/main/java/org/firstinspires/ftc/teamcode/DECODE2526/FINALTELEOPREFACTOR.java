@@ -28,6 +28,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp
 public class FINALTELEOPREFACTOR extends LinearOpMode {
+    private final Toggle toggle = new Toggle();
+    private final Debouncer shootDebouncer = new Debouncer();
+    private final Debouncer reallyCoolDebouncer = new Debouncer();
+    private final double cameraX = 0;
     ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     double totalCurrent = 0;
     double closePos = 0.09;
@@ -44,17 +48,12 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
     private RevBlinkinLedDriver frontLights;
     private RevBlinkinLedDriver rearLights;
     private Servo siloServo;
-    private final Toggle toggle = new Toggle();
-    private final Debouncer shootDebouncer = new Debouncer();
-    private final Debouncer reallyCoolDebouncer = new Debouncer();
     private boolean debounce;
     private boolean isthethingthething;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     private YawPitchRollAngles cameraOrientation;
     private Position cameraPosition;
-    private final double cameraX = 0;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
