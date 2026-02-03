@@ -88,7 +88,7 @@ private double cameraX = 0;
         cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
                 0, -90 + 19, 0, 0);
 
-        waitForStart();
+
 
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
@@ -158,6 +158,7 @@ private double cameraX = 0;
             frontLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         }
+
         waitForStart();
 
 
@@ -182,7 +183,7 @@ AtomicInteger silopos = new AtomicInteger(1000);
            System.out.println(intake.getCurrentPosition()/120 + " pos/120");
 
                 if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 4 && intake.getCurrentPosition()/120 <= 7) && !siloshootig.get()) {
-                    intake.setPower(00);
+                    intake.setPower(0);
                     sleep(1000);
                     siloshootig.set(true);
                     gateServo.setPosition(closePos);
