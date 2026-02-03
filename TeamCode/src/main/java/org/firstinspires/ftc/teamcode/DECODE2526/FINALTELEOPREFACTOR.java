@@ -175,13 +175,13 @@ private double cameraX = 0;
 
 
 
-           if(intake.getCurrentPosition() >=750) {
+             if(intake.getCurrentPosition() >=750) {
                intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-           }
+             }
 
-           System.out.println(intake.getCurrentPosition() + " wheel pos");
-           System.out.println(intake.getCurrentPosition()/120 + " pos/120");
+            System.out.println(intake.getCurrentPosition() + " wheel pos");
+            System.out.println(intake.getCurrentPosition()/120 + " pos/120");
 
                 if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 4 && intake.getCurrentPosition()/120 <= 7) && !siloshootig.get()) {
                     intake.setPower(0);

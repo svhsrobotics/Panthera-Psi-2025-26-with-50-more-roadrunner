@@ -159,7 +159,7 @@ private double cameraX = 0;
             rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         }
 
-        waitForStart();
+         waitForStart();
 
 
 intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -170,7 +170,7 @@ AtomicInteger silopos = new AtomicInteger(1000);
 
         while (opModeIsActive()) {
 
-            telemetry.addData("intakePos", intake.getCurrentPosition());
+           telemetry.addData("intakePos", intake.getCurrentPosition());
 
 
 
@@ -300,7 +300,7 @@ AtomicInteger silopos = new AtomicInteger(1000);
                    // launch.setPower(0);
                     //launch2.setPower(0);
                     shooting.set(false);
-        }, 5, TimeUnit.SECONDS);
+                }, 5, TimeUnit.SECONDS);
 
 
             }
