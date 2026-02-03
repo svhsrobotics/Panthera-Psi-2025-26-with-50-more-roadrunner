@@ -27,7 +27,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp
-public class FINALTELEOPREFACTOR extends LinearOpMode{
+public class FINALTELEOPREFACTOR extends LinearOpMode {
+    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    double totalCurrent = 0;
+    double closePos = 0.09;
+    int denominator = 0;
+    double averageCurrent = 0;
     private DcMotor right;
     private DcMotor left;
     private DcMotor launch2;
@@ -35,27 +40,20 @@ public class FINALTELEOPREFACTOR extends LinearOpMode{
     private DcMotorEx intake;
     private Servo gateServo;
     private Servo gateServo2;
-    private VoltageSensor  voltSensor;
+    private VoltageSensor voltSensor;
     private RevBlinkinLedDriver frontLights;
     private RevBlinkinLedDriver rearLights;
     private Servo siloServo;
-    private Toggle toggle = new Toggle();
-
-    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-
-private Debouncer shootDebouncer = new Debouncer();
-private Debouncer reallyCoolDebouncer = new Debouncer();
+    private final Toggle toggle = new Toggle();
+    private final Debouncer shootDebouncer = new Debouncer();
+    private final Debouncer reallyCoolDebouncer = new Debouncer();
     private boolean debounce;
     private boolean isthethingthething;
-    double totalCurrent = 0;
-    double closePos = 0.09;
-    int denominator = 0;
-    double averageCurrent = 0;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     private YawPitchRollAngles cameraOrientation;
     private Position cameraPosition;
-private double cameraX = 0;
+    private final double cameraX = 0;
 
 
     @Override
@@ -92,7 +90,6 @@ private double cameraX = 0;
                 0, 8, 0, 0);
         cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
                 0, -90 + 19, 0, 0);
-
 
 
         // Create the AprilTag processor.
@@ -168,42 +165,40 @@ private double cameraX = 0;
         waitForStart();
 
 
-
         while (opModeIsActive()) {
 
-           telemetry.addData("intakePos", intake.getCurrentPosition());
+            telemetry.addData("intakePos", intake.getCurrentPosition());
 
 
-
-             if(intake.getCurrentPosition() >=750) {
-               intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-               intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-             }
+            if (intake.getCurrentPosition() >= 750) {
+                intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
 
             System.out.println(intake.getCurrentPosition() + " wheel pos");
-            System.out.println(intake.getCurrentPosition()/120 + " pos/120");
+            System.out.println(intake.getCurrentPosition() / 120 + " pos/120");
 
-                if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 4 && intake.getCurrentPosition()/120 <= 7) && !siloshootig.get()) {
+            if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 4 && intake.getCurrentPosition() / 120 <= 7) && !siloshootig.get()) {
+                intake.setPower(0);
+                sleep(1000);
+                siloshootig.set(true);
+                gateServo.setPosition(closePos);
+                gateServo2.setPosition(closePos);
+
+                scheduler.schedule(() -> {
+                    siloServo.setPosition(0);
                     intake.setPower(0);
-                    sleep(1000);
-                    siloshootig.set(true);
-                    gateServo.setPosition(closePos);
-                    gateServo2.setPosition(closePos);
+                }, 100, TimeUnit.MILLISECONDS);
 
-                    scheduler.schedule(()->{
-                        siloServo.setPosition(0);
-                        intake.setPower(0);
-                    }, 100, TimeUnit.MILLISECONDS);
+                double finalServoshootpos = servoshootpos;
+                scheduler.schedule(() -> {
+                    gateServo.setPosition(finalServoshootpos);
+                    gateServo2.setPosition(finalServoshootpos);
 
-                    double finalServoshootpos = servoshootpos;
-                    scheduler.schedule(() -> {
-                        gateServo.setPosition(finalServoshootpos);
-                        gateServo2.setPosition(finalServoshootpos);
-
-                        siloServo.setPosition(0.4);
-                        siloshootig.set(false);
-                    }, 3000 , TimeUnit.MILLISECONDS);
-                }
+                    siloServo.setPosition(0.4);
+                    siloshootig.set(false);
+                }, 3000, TimeUnit.MILLISECONDS);
+            }
 
 
             if (intake.getPower() != 0) {
@@ -263,8 +258,8 @@ private double cameraX = 0;
                 intake.setPower(1);
                 gateServo.setPosition(closePos);
                 gateServo2.setPosition(closePos);
-               // launch.setPower(0);
-               // launch2.setPower(0);
+                // launch.setPower(0);
+                // launch2.setPower(0);
             }
 
             if (gamepad1.right_bumper) {
@@ -312,7 +307,6 @@ private double cameraX = 0;
             }
 
 
-
             if (gamepad2.dpad_left) {
                 servoshootpos = servoshootpos + 1;
             }
@@ -358,7 +352,7 @@ private double cameraX = 0;
                 }
                 telemetry.update();
             }*/
-            if(gamepad2.dpad_left){ //estop
+            if (gamepad2.dpad_left) { //estop
                 intake.setPower(0);
                 scheduler.shutdownNow();
                 launchpower = 0;
