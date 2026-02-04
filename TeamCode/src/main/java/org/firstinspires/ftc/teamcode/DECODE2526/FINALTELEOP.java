@@ -225,9 +225,9 @@ AtomicInteger silopos = new AtomicInteger(1000);
             System.out.println("servo 2 pos: " + gateServo2.getPosition());
             System.out.println("kickpos: " + servoshootpos);*/
 
-
-            right.setPower((gamepad1.right_stick_x + gamepad1.left_stick_y));
-            left.setPower((gamepad1.right_stick_x - gamepad1.left_stick_y));
+            //flip left and right to change direction
+            left.setPower((gamepad1.right_stick_x + gamepad1.left_stick_y));
+            right.setPower((gamepad1.right_stick_x - gamepad1.left_stick_y));
             //0.25 is open 0.02 is close
             if (gamepad1.dpad_up) { //opens da gate
                 gateServo.setPosition(servoshootpos);
