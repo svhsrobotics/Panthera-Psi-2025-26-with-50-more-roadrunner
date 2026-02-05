@@ -25,11 +25,17 @@ while (opModeIsActive()){
     } else if(downbouncer.update(gamepad1.dpad_down)){
         servoPos = servoPos - 0.01;
         System.out.println(servoPos);
+    } else if(gamepad1.left_bumper){
+        servoPos = 0.35;
+    } else if (gamepad1.right_bumper){
+        servoPos = 0.09;
     }
 
     siloServo.setPosition(servoPos);
-    //0 for mocing
-    //0.4 for closed
+    //0.35 for mocing
+    //0.09 for closed
+
+    //dont do go beyone 0.06
 }
     }
 }

@@ -163,8 +163,10 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
 
         waitForStart();
 
-
+        siloServo.setPosition(0.09);
         while (opModeIsActive()) {
+            System.out.println(siloshootig.get());
+
 
             telemetry.addData("intakePos", intake.getCurrentPosition());
 
@@ -174,8 +176,8 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
                 intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
 
-            System.out.println(intake.getCurrentPosition() + " wheel pos");
-            System.out.println(intake.getCurrentPosition() / 120 + " pos/120");
+            //System.out.println(intake.getCurrentPosition() + " wheel pos");
+           // System.out.println(intake.getCurrentPosition() / 120 + " pos/120");
 
             if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 4 && intake.getCurrentPosition() / 120 <= 7) && !siloshootig.get()) {
                 intake.setPower(0);
@@ -185,16 +187,16 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
                 gateServo2.setPosition(closePos);
 
                 scheduler.schedule(() -> {
-                    siloServo.setPosition(0);
+                    siloServo.setPosition(0.36);
                     intake.setPower(0);
                 }, 100, TimeUnit.MILLISECONDS);
 
                 double finalServoshootpos = servoshootpos;
                 scheduler.schedule(() -> {
-                    gateServo.setPosition(finalServoshootpos);
-                    gateServo2.setPosition(finalServoshootpos);
+                   // gateServo.setPosition(finalServoshootpos);
+                   // gateServo2.setPosition(finalServoshootpos);
 
-                    siloServo.setPosition(0.4);
+                    siloServo.setPosition(0.9);
                     siloshootig.set(false);
                 }, 3000, TimeUnit.MILLISECONDS);
             }
@@ -282,7 +284,7 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
                 scheduler.schedule(() -> {
                     gateServo.setPosition(1);
                     gateServo2.setPosition(1);
-                }, 4, TimeUnit.SECONDS);
+                }, 5, TimeUnit.SECONDS);
 
                 scheduler.schedule(() -> {
                     gateServo.setPosition(closePos);
@@ -291,8 +293,8 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
                     // launch.setPower(0);
                     //launch2.setPower(0);
                     shooting.set(false);
-                }, 5, TimeUnit.SECONDS);
-
+                }, 6, TimeUnit.SECONDS); //TODO lowwer the spin up time, and possibly change power based on distance
+//TODO: run intake only when actually intaking and when the wheel is spun up
 
             }
 
