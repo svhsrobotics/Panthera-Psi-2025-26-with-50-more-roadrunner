@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
@@ -84,7 +85,12 @@ double startX = 0;
         TankDrive drive = new TankDrive(hardwareMap, initPose);
 
         Gate gate = new Gate(hardwareMap); //makes a new gate (lol)
+        TrajectoryActionBuilder tab1 = drive.actionBuilder(initPose)
+                .lineToX(100);
+        waitForStart();
+
     }
+
 
 
 }
