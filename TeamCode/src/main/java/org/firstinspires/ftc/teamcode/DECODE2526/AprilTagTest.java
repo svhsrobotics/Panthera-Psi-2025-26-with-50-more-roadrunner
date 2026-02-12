@@ -28,28 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp
 public class AprilTagTest extends LinearOpMode {
-    private final Toggle toggle = new Toggle();
-    private final Debouncer shootDebouncer = new Debouncer();
-    private final Debouncer reallyCoolDebouncer = new Debouncer();
-    private final double cameraX = 0;
-    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    double totalCurrent = 0;
-    double closePos = 0.09;
-    int denominator = 0;
-    double averageCurrent = 0;
-    private DcMotor right;
-    private DcMotor left;
-    private DcMotor launch2;
-    private DcMotor launch;
-    private DcMotorEx intake;
-    private Servo gateServo;
-    private Servo gateServo2;
-    private VoltageSensor voltSensor;
-    private RevBlinkinLedDriver frontLights;
-    private RevBlinkinLedDriver rearLights;
-    private Servo siloServo;
-    private boolean debounce;
-    private boolean isthethingthething;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     private YawPitchRollAngles cameraOrientation;
@@ -58,32 +36,6 @@ public class AprilTagTest extends LinearOpMode {
     @Override
 
     public void runOpMode() throws InterruptedException {
-        right = hardwareMap.get(DcMotor.class, "right");
-        left = hardwareMap.get(DcMotor.class, "left");
-        launch2 = hardwareMap.get(DcMotor.class, "launch2");
-        launch = hardwareMap.get(DcMotor.class, "launch1");
-        launch.setDirection(DcMotorSimple.Direction.REVERSE);
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-        gateServo = hardwareMap.get(Servo.class, "gateServo");
-        gateServo2 = hardwareMap.get(Servo.class, "gateServo2");
-        voltSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
-        frontLights = hardwareMap.get(RevBlinkinLedDriver.class, "frontLights");
-        rearLights = hardwareMap.get(RevBlinkinLedDriver.class, "rearLights");
-        siloServo = hardwareMap.get(Servo.class, "siloServo");
-        AtomicBoolean shooting = new AtomicBoolean(false);
-        gateServo2.setDirection(Servo.Direction.REVERSE);
-        debounce = true;
-        isthethingthething = false;
-        Debouncer debouncingOnDeesNuts = new Debouncer();
-        Debouncer debouncer2 = new Debouncer();
-        double gatePos = 0;
-        double launchpower = 0;
-        //System.out.println("set gatePos to 0");
-        double servoshootpos = 0.5;
-        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        AtomicBoolean siloshootig = new AtomicBoolean(false);
-        AtomicInteger silopos = new AtomicInteger(1000);
 
         cameraPosition = new Position(DistanceUnit.INCH,
                 0, 8, 0, 0);
@@ -151,18 +103,10 @@ public class AprilTagTest extends LinearOpMode {
 
         // end method initAprilTag()
 
-        while (opModeInInit()) {
-            launchpower = 0.9;
-            frontLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-            rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
-        }
-
 
         waitForStart();
 
-        siloServo.setPosition(0.09);
         while (opModeIsActive()) {
-            System.out.println(siloshootig.get());
 
             for (int i = 0; i < aprilTag.getDetections().size(); i++) {
                 telemetry.addData("apriltag", aprilTag.getDetections().get(i));
@@ -170,192 +114,6 @@ public class AprilTagTest extends LinearOpMode {
             }
             telemetry.update();
 
-            if (intake.getCurrentPosition() >= 750) {
-                intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
-
-            //System.out.println(intake.getCurrentPosition() + " wheel pos");
-            // System.out.println(intake.getCurrentPosition() / 120 + " pos/120");
-
-            if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 4 && intake.getCurrentPosition() / 120 <= 7) && !siloshootig.get()) {
-                intake.setPower(0);
-                sleep(1000);
-                siloshootig.set(true);
-                gateServo.setPosition(closePos);
-                gateServo2.setPosition(closePos);
-
-                scheduler.schedule(() -> {
-                    siloServo.setPosition(0.36);
-                    intake.setPower(0);
-                }, 100, TimeUnit.MILLISECONDS);
-
-                double finalServoshootpos = servoshootpos;
-                scheduler.schedule(() -> {
-                    // gateServo.setPosition(finalServoshootpos);
-                    // gateServo2.setPosition(finalServoshootpos);
-
-                    siloServo.setPosition(0.9);
-                    siloshootig.set(false);
-                }, 3000, TimeUnit.MILLISECONDS);
-            }
-
-
-            if (intake.getPower() != 0) {
-                rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-            } else {
-                rearLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-            }
-
-            if (launchpower != 0) {
-                frontLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
-            } else {
-                frontLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-            }
-
-           /* System.out.println("gatepos: " + gatePos);
-            System.out.println("servo 1 pos: " + gateServo.getPosition());
-            System.out.println("servo 2 pos: " + gateServo2.getPosition());
-            System.out.println("kickpos: " + servoshootpos);*/
-
-
-            left.setPower((gamepad1.right_stick_x + gamepad1.left_stick_y));
-            right.setPower((gamepad1.right_stick_x - gamepad1.left_stick_y));
-            //0.25 is open 0.02 is close
-            if (gamepad1.dpad_up) { //opens da gate
-                gateServo.setPosition(servoshootpos);
-                gateServo2.setPosition(servoshootpos);
-            } else if (gamepad1.dpad_down) { //close
-                gateServo.setPosition(closePos);
-                gateServo2.setPosition(closePos);
-            }
-
-            if (gamepad1.dpad_right) { //dpad manually spins up or down flywheels
-                launch.setPower(launchpower);
-                launch2.setPower(launchpower);
-
-
-            } else if (gamepad1.dpad_left) {
-                launch.setPower(0);
-                launch2.setPower(0);
-
-            }
-
-            if (debouncingOnDeesNuts.update(gamepad2.dpad_up)) {
-                launchpower += .01;
-            } else if (debouncer2.update(gamepad2.dpad_down)) {
-                launchpower -= .01;
-            }
-
-            telemetry.addData("shoot power", launchpower);
-            telemetry.addData("servo1Pos: ", gateServo.getPosition());
-            telemetry.addData("servo2Pos", gateServo2.getPosition());
-            telemetry.addData("average milliamp", averageCurrent);
-            telemetry.addData("shootservopos", servoshootpos);
-            telemetry.update();
-
-            if (gamepad1.b) {
-                intake.setPower(1);
-                gateServo.setPosition(closePos);
-                gateServo2.setPosition(closePos);
-                // launch.setPower(0);
-                // launch2.setPower(0);
-            }
-
-            if (gamepad1.right_bumper) {
-                intake.setPower(0);
-            }
-
-            if (shootDebouncer.update(gamepad2.a) && !shooting.get()) { //shoot ball that is currently primed
-
-                //shoot
-                /*
-                spin up wheel
-                open gate
-                wait a little
-                set power 0
-                 */
-                shooting.set(true);
-                intake.setPower(0.2);
-                launch.setPower(1);
-                launch.setPower(1);
-                //wait 1 sec then open the gate
-                scheduler.schedule(() -> {
-                    gateServo.setPosition(1);
-                    gateServo2.setPosition(1);
-                }, 5, TimeUnit.SECONDS);
-
-                scheduler.schedule(() -> {
-                    gateServo.setPosition(closePos);
-                    gateServo2.setPosition(closePos);
-                    // intake.setPower(0);
-                    // launch.setPower(0);
-                    //launch2.setPower(0);
-                    shooting.set(false);
-                }, 6, TimeUnit.SECONDS); //TODO lowwer the spin up time, and possibly change power based on distance
-//TODO: run intake only when actually intaking and when the wheel is spun up
-
-            }
-
-            if (gamepad2.y) {
-                launch.setPower(0);
-                launch2.setPower(0);
-            }
-
-            if (gamepad2.x) {
-                scheduler.shutdownNow();
-            }
-
-
-            if (gamepad2.dpad_left) {
-                servoshootpos = servoshootpos + 1;
-            }
-            if (gamepad2.dpad_right) {
-                servoshootpos = servoshootpos - 1;
-            }
-
-
-            if (gamepad2.dpad_left) { //estop
-                intake.setPower(0);
-                scheduler.shutdownNow();
-                launchpower = 0;
-                left.setPower(0);
-                right.setPower(0);
-            }
-
-
         }
-
-        scheduler.shutdownNow();
-
     }
-
 }
-
-
-
-/*TODO: Gamepad 1 (Primary Driver)
-
-
-    Intake Start (Cross/A Button): Logic Swap. * Code Reality: gamepad1.a triggers the shootDebouncer sequence (spinning flywheels and opening gates). It does not start a standard intake loop.
-
-    Shoot in Motif Order (Circle/B Button): Logic Swap.
-
-        Code Reality: gamepad1.b actually sets intake.setPower(1), effectively acting as the "Intake Start" button, while also closing the gates.
-
-    Stop Intake (Triangle/Y Button): Missing. * Code Reality: The code does not reference gamepad1.y at all. Intake stop is currently handled by gamepad1.right_bumper.
-
-    Drive (Sticks): Partially Commented Out.
-
-        Note: The lines assigning right.setPower and left.setPower to the joysticks are currently commented out (Lines 169–170). The robot will not move in its current state.
-
-Gamepad 2 (Secondary Operator)
-
-    Load 1 Ball from Silo (Circle/B Button): Missing. * Code Reality: The code does not reference gamepad2.b.
-
-    Intake Spin In (Triangle/Y Button): Functional, but lacks a "Stop" on the same controller besides the E-Stop.
-
-    Intake Spin Out (Cross/A Button): Logic Swap. * Code Reality: gamepad2.a is mapped to intake.setPower(-1), which matches "Spin Out," but the diagram labels the Cross button as "Shoot ball thats primed."
-
-    Shoot ball thats primed (Cross/A Button): Missing.*/
-
