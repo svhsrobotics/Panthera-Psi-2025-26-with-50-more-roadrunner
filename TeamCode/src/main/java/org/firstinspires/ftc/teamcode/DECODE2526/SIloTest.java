@@ -26,16 +26,17 @@ while (opModeIsActive()){
         servoPos = servoPos - 0.01;
         System.out.println(servoPos);
     } else if(gamepad1.left_bumper){
-        servoPos = 0.35;
+        servoPos = 0.48;
     } else if (gamepad1.right_bumper){
-        servoPos = 0.09;
+        servoPos = 0.02;
     }
-
+telemetry.addData("servo pos", servoPos);
+    telemetry.update();
     siloServo.setPosition(servoPos);
-    //0.35 for mocing
-    //0.09 for closed
+    //0.48 for mocing
+    //0.02 for closed
 
-    //dont do go beyone 0.06
+
 }
     }
 }

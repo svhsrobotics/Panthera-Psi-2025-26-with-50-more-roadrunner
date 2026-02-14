@@ -163,7 +163,7 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
 
         waitForStart();
 
-        siloServo.setPosition(0.09);
+        siloServo.setPosition(0.48);
         while (opModeIsActive()) {
             System.out.println(siloshootig.get());
 
@@ -180,15 +180,15 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
            // System.out.println(intake.getCurrentPosition() / 120 + " pos/120");
 
             if (gamepad1.a && (intake.getCurrentPosition() / 120 >= 4 && intake.getCurrentPosition() / 120 <= 7) && !siloshootig.get()) {
-                intake.setPower(0);
-                sleep(1000);
+                intake.setPower(0.2);
+
                 siloshootig.set(true);
                 gateServo.setPosition(closePos);
                 gateServo2.setPosition(closePos);
 
                 scheduler.schedule(() -> {
-                    siloServo.setPosition(0.36);
-                    intake.setPower(0);
+                    siloServo.setPosition(0.02);
+                    intake.setPower(0.2);
                 }, 100, TimeUnit.MILLISECONDS);
 
                 double finalServoshootpos = servoshootpos;
@@ -196,9 +196,14 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
                    // gateServo.setPosition(finalServoshootpos);
                    // gateServo2.setPosition(finalServoshootpos);
 
-                    siloServo.setPosition(0.9);
+                    siloServo.setPosition(0.48);
                     siloshootig.set(false);
-                }, 3000, TimeUnit.MILLISECONDS);
+                }, 500, TimeUnit.MILLISECONDS);
+
+                scheduler.schedule(()->{
+                    gateServo.setPosition(finalServoshootpos);
+                    gateServo2.setPosition(finalServoshootpos);
+                }, 1200, TimeUnit.MILLISECONDS);
             }
 
 
@@ -293,8 +298,7 @@ public class FINALTELEOPREFACTOR extends LinearOpMode {
                     // launch.setPower(0);
                     //launch2.setPower(0);
                     shooting.set(false);
-                }, 6, TimeUnit.SECONDS); //TODO lowwer the spin up time, and possibly change power based on distance
-//TODO: run intake only when actually intaking and when the wheel is spun up
+                }, 6, TimeUnit.SECONDS);
 
             }
 

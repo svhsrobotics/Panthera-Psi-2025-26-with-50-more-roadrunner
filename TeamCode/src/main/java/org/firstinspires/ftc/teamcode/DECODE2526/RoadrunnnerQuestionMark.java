@@ -86,9 +86,16 @@ double startX = 0;
 
         Gate gate = new Gate(hardwareMap); //makes a new gate (lol)
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initPose)
-                .lineToX(100);
-        waitForStart();
 
+                        .turn(Math.PI)
+                                .lineToX(-50)
+                                        .turn(Math.toRadians(90));
+        waitForStart();
+if(isStopRequested()) {return;}
+        Actions.runBlocking(new SequentialAction(
+                tab1.build(),
+                gate.openGate()
+        ));
     }
 
 
