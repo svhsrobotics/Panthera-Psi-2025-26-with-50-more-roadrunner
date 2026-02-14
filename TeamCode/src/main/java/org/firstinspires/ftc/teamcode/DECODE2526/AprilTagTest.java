@@ -32,11 +32,14 @@ public class AprilTagTest extends LinearOpMode {
     private VisionPortal visionPortal;
     private YawPitchRollAngles cameraOrientation;
     private Position cameraPosition;
+    private DcMotor right;
+    private DcMotor left;
 
     @Override
 
     public void runOpMode() throws InterruptedException {
-
+        right = hardwareMap.get(DcMotor.class, "right");
+        left = hardwareMap.get(DcMotor.class, "left");
         cameraPosition = new Position(DistanceUnit.INCH,
                 0, 8, 0, 0);
         cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
@@ -107,11 +110,27 @@ public class AprilTagTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            right.setPower((gamepad1.right_stick_x + gamepad1.left_stick_y));
+            left.setPower((gamepad1.right_stick_x - gamepad1.left_stick_y));
 
-            for (int i = 0; i < aprilTag.getDetections().size(); i++) {
-                telemetry.addData("apriltag", aprilTag.getDetections().get(i));
+            telemetry.addData("hi",visionPortal.getCameraState());
 
+            if (!aprilTag.getDetections().isEmpty()) {
+                for (int i = 0; i < aprilTag.getDetections().size(); i++) {
+                    telemetry.addData("apriltag", aprilTag.getDetections().get(i).robotPose);
+                    double botx = aprilTag.getDetections().get(i).robotPose.getPosition().x;
+                    double botz = aprilTag.getDetections().get(i).robotPose.getPosition().z;
+                    telemetry.addData("botX", botx);
+                    telemetry.addData("botz", botz);
+
+                    double targetingx = 144;
+                    double targetingz = 144;
+                    double lengthx = targetingx - botx;
+                    double lengthz = targetingz - botz;
+                    telemetry.addData("distance", Math.hypot(lengthx, lengthz));
+                }
             }
+
             telemetry.update();
 
         }
