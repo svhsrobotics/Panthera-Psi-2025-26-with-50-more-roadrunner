@@ -1,39 +1,36 @@
 package org.firstinspires.ftc.teamcode.DECODE2526;
 
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.util.Debouncer;
-import org.firstinspires.ftc.teamcode.util.Toggle;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
 
 @TeleOp
-public class AprilTagTest extends LinearOpMode {
+public class AprilTagDistanceTest extends LinearOpMode {
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     private YawPitchRollAngles cameraOrientation;
     private Position cameraPosition;
     private DcMotor right;
     private DcMotor left;
+    private ArrayList detections;
+    //where the robot is targeting
+    //According to google, the red goal is at (-58.3727, 55.6425, 29.5).
+    // the blue goal is at -58.3727, 55.6425, 29.5)
+    // i don't know if this is right
+    double targetingx = -58.3727;
+    double targetingy = 55.6435;
+    //ok
 
     @Override
 
@@ -116,18 +113,20 @@ public class AprilTagTest extends LinearOpMode {
             telemetry.addData("hi",visionPortal.getCameraState());
 
             if (!aprilTag.getDetections().isEmpty()) {
-                for (int i = 0; i < aprilTag.getDetections().size(); i++) {
-                    telemetry.addData("apriltag", aprilTag.getDetections().get(i).robotPose);
-                    double botx = aprilTag.getDetections().get(i).robotPose.getPosition().x;
-                    double botz = aprilTag.getDetections().get(i).robotPose.getPosition().z;
-                    telemetry.addData("botX", botx);
-                    telemetry.addData("botz", botz);
+                //run through all detections, making sure theyre not null
+                for (int i = 0; i < detections.size(); i++) {
+                    if (aprilTag.getDetections().get(i)!=null) {
+                        double botx = aprilTag.getDetections().get(i).robotPose.getPosition().x;
+                        double boty = aprilTag.getDetections().get(i).robotPose.getPosition().y;
+                        telemetry.addData("botX", botx);
+                        telemetry.addData("boty", boty);
 
-                    double targetingx = 144;
-                    double targetingz = 144;
-                    double lengthx = targetingx - botx;
-                    double lengthz = targetingz - botz;
-                    telemetry.addData("distance", Math.hypot(lengthx, lengthz));
+                        //get distance from the target using the pythagorean theorum
+                        double lengthx = targetingx - botx;
+                        double lengthz = targetingy - boty;
+                        double distancefromtarget = Math.hypot(lengthx, lengthz);
+                        telemetry.addData("distance", distancefromtarget);
+                    }
                 }
             }
 
