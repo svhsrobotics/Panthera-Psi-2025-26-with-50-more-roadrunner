@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.DECODE2526;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -92,17 +93,17 @@ right.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
        waitForStart();
-
-           left.setPower(0.985);
-           right.setPower(1);
-           sleep(600);
+        gateServo.setPosition(closePos);
+        gateServo2.setPosition(closePos);
+           left.setPower(0.885);
+           right.setPower(0.9);
+           sleep(400);
            left.setPower(0);
            right.setPower(0);
 
-            gateServo.setPosition(closePos);
-            gateServo2.setPosition(closePos);
-            shooting.set(true);
-        while ( shooting.get()) { //shoot ball that is currently primed
+
+
+      //shoot ball that is currently primed
 
             //shoot
                 /*
@@ -111,15 +112,22 @@ right.setDirection(DcMotorSimple.Direction.REVERSE);
                 wait a little
                 set power 0
                  */
-            shooting.set(true);
-            intake.setPower(0.2);
+
+
             launch.setPower(1);
-            launch.setPower(1);
+            launch2.setPower(1);
+            //gateServo.setPosition(0);
+            //gateServo2.setPosition(0);
             //wait 1 sec then open the gate
+        while(!shooting.get()) {
+            shooting.set(true);
             scheduler.schedule(() -> {
-                gateServo.setPosition(1);
-                gateServo2.setPosition(1);
+                intake.setPower(0.2);
             }, 4, TimeUnit.SECONDS);
+            scheduler.schedule(() -> {
+                gateServo.setPosition(0.98);
+                gateServo2.setPosition(0.98);
+            }, 5000, TimeUnit.MILLISECONDS);
 
             scheduler.schedule(() -> {
                 gateServo.setPosition(closePos);
@@ -128,10 +136,13 @@ right.setDirection(DcMotorSimple.Direction.REVERSE);
                 // launch.setPower(0);
                 //launch2.setPower(0);
                 shooting.set(false);
-            }, 5, TimeUnit.SECONDS);
-
-
+            }, 7, TimeUnit.SECONDS);
         }
+
+
+        System.out.println("mving on");
+
+       // sleep(10000000);
 scheduler.shutdownNow();
 
     }
