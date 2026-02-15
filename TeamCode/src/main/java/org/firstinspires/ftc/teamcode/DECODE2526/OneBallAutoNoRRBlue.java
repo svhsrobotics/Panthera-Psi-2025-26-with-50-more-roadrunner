@@ -119,8 +119,9 @@ right.setDirection(DcMotorSimple.Direction.REVERSE);
             //gateServo.setPosition(0);
             //gateServo2.setPosition(0);
             //wait 1 sec then open the gate
-        while(!shooting.get()) {
-            shooting.set(true);
+
+
+
             scheduler.schedule(() -> {
                 intake.setPower(0.2);
             }, 4, TimeUnit.SECONDS);
@@ -137,12 +138,12 @@ right.setDirection(DcMotorSimple.Direction.REVERSE);
                 //launch2.setPower(0);
                 shooting.set(false);
             }, 7, TimeUnit.SECONDS);
-        }
+
 
 
         System.out.println("mving on");
 
-       // sleep(10000000);
+       sleep(10000000);
 scheduler.shutdownNow();
 
     }
